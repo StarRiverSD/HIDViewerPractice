@@ -171,3 +171,4 @@ std::string HIDInfoExtractor::Get_HID_Info_String()
 
 	return info_string;
 }
+
