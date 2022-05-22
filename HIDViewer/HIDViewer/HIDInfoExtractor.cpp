@@ -146,14 +146,16 @@ int HIDInfoExtractor::Extract_HID_Info()
 	}
 #pragma endregion
 
+	SetupDiDestroyDeviceInfoList(h_dev_info);
 	return 0;
 }
 
 void Append_Info_String(std::string& info_string, std::string entry, std::string value)
 {
+	info_string.append("#");
 	info_string.append(entry);
 	info_string.append(value);
-	info_string.append("\r\n");
+	info_string.append("    ");
 }
 
 std::string HIDInfoExtractor::Get_HID_Info_String()

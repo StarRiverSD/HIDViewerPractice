@@ -5,6 +5,7 @@ void Run_Form(HIDInfoExtractor* extractor)
 {
 	HIDViewer::HIDForm form;
 	form.Set_HID_Info_Extractor(extractor);
+	form.Launch_Extraction();
 	System::Windows::Forms::Application::Run(% form);
 }
 

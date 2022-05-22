@@ -66,17 +66,17 @@ namespace HIDViewer {
 			// 
 			this->hid_list_textbox->Font = (gcnew System::Drawing::Font(L"Arial", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->hid_list_textbox->Location = System::Drawing::Point(689, 79);
+			this->hid_list_textbox->Location = System::Drawing::Point(26, 70);
 			this->hid_list_textbox->Multiline = true;
 			this->hid_list_textbox->Name = L"hid_list_textbox";
 			this->hid_list_textbox->ReadOnly = true;
 			this->hid_list_textbox->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
-			this->hid_list_textbox->Size = System::Drawing::Size(594, 609);
+			this->hid_list_textbox->Size = System::Drawing::Size(1358, 498);
 			this->hid_list_textbox->TabIndex = 1;
 			// 
 			// refresh_button
 			// 
-			this->refresh_button->Location = System::Drawing::Point(1208, 712);
+			this->refresh_button->Location = System::Drawing::Point(1309, 600);
 			this->refresh_button->Name = L"refresh_button";
 			this->refresh_button->Size = System::Drawing::Size(75, 23);
 			this->refresh_button->TabIndex = 2;
@@ -89,7 +89,7 @@ namespace HIDViewer {
 			this->hid_title_lable->AutoSize = true;
 			this->hid_title_lable->Font = (gcnew System::Drawing::Font(L"Arial", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->hid_title_lable->Location = System::Drawing::Point(684, 37);
+			this->hid_title_lable->Location = System::Drawing::Point(32, 22);
 			this->hid_title_lable->Name = L"hid_title_lable";
 			this->hid_title_lable->Size = System::Drawing::Size(96, 27);
 			this->hid_title_lable->TabIndex = 3;
@@ -99,7 +99,7 @@ namespace HIDViewer {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(1317, 815);
+			this->ClientSize = System::Drawing::Size(1405, 651);
 			this->Controls->Add(this->hid_title_lable);
 			this->Controls->Add(this->refresh_button);
 			this->Controls->Add(this->hid_list_textbox);
@@ -116,5 +116,6 @@ namespace HIDViewer {
 	public:
 		void Set_HID_Info_Extractor(HIDInfoExtractor* extractor);
 		void Set_HID_Textbox(std::string hid_info);
+		void Launch_Extraction();
 	};
 }
