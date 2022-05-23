@@ -295,6 +295,17 @@ INT_PTR WINAPI WinProcCallback(
             ExitProcess(1);
         }
 
+        if (extractor.Extract_HID_Info() == 0)
+        {
+            std::string info_string = extractor.Get_HID_Info_String();
+            std::wstring info_wstring(info_string.begin(), info_string.end());
+            SendMessage(hEditWnd, WM_SETTEXT, 0, (LPARAM)(info_wstring.c_str()));
+        }
+        else
+        {
+            SendMessage(hEditWnd, WM_SETTEXT, 0, (LPARAM)TEXT("Initial extract HID info error...\r\n\r\n"));
+        }
+
         break;
 
     case WM_SETFOCUS:
