@@ -9,16 +9,16 @@ HIDInfoExtractor extractor;
 
 // This GUID is for all USB serial host PnP drivers, but you can replace it 
 // with any valid device class guid.
-GUID WceusbshGUID = { 0x25dbce51, 0x6c8f, 0x4a72,
+GUID wceusbsh_guid = { 0x25dbce51, 0x6c8f, 0x4a72,
                       0x8a,0x6d,0xb5,0x4c,0x2b,0x4f,0xc8,0x35 };
 
 // For informational messages and window titles.
-PWSTR g_pszAppName;
+PWSTR g_psz_app_name;
 
-void OutputMessage(
-    HWND hOutWnd,
-    WPARAM wParam,
-    LPARAM lParam
+void Output_Message(
+    HWND h_out_wnd,
+    WPARAM w_param,
+    LPARAM l_param
 )
 // Routine Description:
 //     Support routine.
@@ -38,58 +38,58 @@ void OutputMessage(
 
 //     This routine has no error-checking.
 {
-    LRESULT   lResult;
-    LONG      bufferLen;
-    LONG      numLines;
-    LONG      firstVis;
+    LRESULT   l_result;
+    LONG      buffer_len;
+    LONG      num_lines;
+    LONG      first_vis;
 
     // Make writable and turn off redraw.
-    lResult = SendMessage(hOutWnd, EM_SETREADONLY, FALSE, 0L);
-    lResult = SendMessage(hOutWnd, WM_SETREDRAW, FALSE, 0L);
+    l_result = SendMessage(h_out_wnd, EM_SETREADONLY, FALSE, 0L);
+    l_result = SendMessage(h_out_wnd, WM_SETREDRAW, FALSE, 0L);
 
     // Obtain current text length in the window.
-    bufferLen = SendMessage(hOutWnd, WM_GETTEXTLENGTH, 0, 0L);
-    numLines = SendMessage(hOutWnd, EM_GETLINECOUNT, 0, 0L);
-    firstVis = SendMessage(hOutWnd, EM_GETFIRSTVISIBLELINE, 0, 0L);
-    lResult = SendMessage(hOutWnd, EM_SETSEL, bufferLen, bufferLen);
+    buffer_len = SendMessage(h_out_wnd, WM_GETTEXTLENGTH, 0, 0L);
+    num_lines = SendMessage(h_out_wnd, EM_GETLINECOUNT, 0, 0L);
+    first_vis = SendMessage(h_out_wnd, EM_GETFIRSTVISIBLELINE, 0, 0L);
+    l_result = SendMessage(h_out_wnd, EM_SETSEL, buffer_len, buffer_len);
 
     // Write the new text.
-    lResult = SendMessage(hOutWnd, EM_REPLACESEL, 0, lParam);
+    l_result = SendMessage(h_out_wnd, EM_REPLACESEL, 0, l_param);
 
     // See whether scrolling is necessary.
-    if (numLines > (firstVis + 1))
+    if (num_lines > (first_vis + 1))
     {
-        int        lineLen = 0;
-        int        lineCount = 0;
-        int        charPos;
+        int        line_len = 0;
+        int        line_count = 0;
+        int        char_pos;
 
         // Find the last nonblank line.
-        numLines--;
-        while (!lineLen)
+        num_lines--;
+        while (!line_len)
         {
-            charPos = SendMessage(
-                hOutWnd, EM_LINEINDEX, (WPARAM)numLines, 0L);
-            lineLen = SendMessage(
-                hOutWnd, EM_LINELENGTH, charPos, 0L);
-            if (!lineLen)
-                numLines--;
+            char_pos = SendMessage(
+                h_out_wnd, EM_LINEINDEX, (WPARAM)num_lines, 0L);
+            line_len = SendMessage(
+                h_out_wnd, EM_LINELENGTH, char_pos, 0L);
+            if (!line_len)
+                num_lines--;
         }
         // Prevent negative value finding min.
-        lineCount = numLines - firstVis;
-        lineCount = (lineCount >= 0) ? lineCount : 0;
+        line_count = num_lines - first_vis;
+        line_count = (line_count >= 0) ? line_count : 0;
 
         // Scroll the window.
-        lResult = SendMessage(
-            hOutWnd, EM_LINESCROLL, 0, (LPARAM)lineCount);
+        l_result = SendMessage(
+            h_out_wnd, EM_LINESCROLL, 0, (LPARAM)line_count);
     }
 
     // Done, make read-only and allow redraw.
-    lResult = SendMessage(hOutWnd, WM_SETREDRAW, TRUE, 0L);
-    lResult = SendMessage(hOutWnd, EM_SETREADONLY, TRUE, 0L);
+    l_result = SendMessage(h_out_wnd, WM_SETREDRAW, TRUE, 0L);
+    l_result = SendMessage(h_out_wnd, EM_SETREADONLY, TRUE, 0L);
 }
 
-void ErrorHandler(
-    LPCTSTR lpszFunction
+void Error_Handler(
+    LPCTSTR lpsz_function
 )
 // Routine Description:
 //     Support routine.
@@ -110,8 +110,8 @@ void ErrorHandler(
 //     application without modification.
 {
 
-    LPVOID lpMsgBuf;
-    LPVOID lpDisplayBuf;
+    LPVOID lp_msg_buf;
+    LPVOID lp_display_buf;
     DWORD dw = GetLastError();
 
     FormatMessage(
@@ -121,30 +121,30 @@ void ErrorHandler(
         NULL,
         dw,
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPTSTR)&lpMsgBuf,
+        (LPTSTR)&lp_msg_buf,
         0, NULL);
 
     // Display the error message and exit the process.
 
-    lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT,
-        (lstrlen((LPCTSTR)lpMsgBuf)
-            + lstrlen((LPCTSTR)lpszFunction) + 40)
+    lp_display_buf = (LPVOID)LocalAlloc(LMEM_ZEROINIT,
+        (lstrlen((LPCTSTR)lp_msg_buf)
+            + lstrlen((LPCTSTR)lpsz_function) + 40)
         * sizeof(TCHAR));
-    if (!lpDisplayBuf) return;
-    StringCchPrintf((LPTSTR)lpDisplayBuf,
-        LocalSize(lpDisplayBuf) / sizeof(TCHAR),
+    if (!lp_display_buf) return;
+    StringCchPrintf((LPTSTR)lp_display_buf,
+        LocalSize(lp_display_buf) / sizeof(TCHAR),
         TEXT("%s failed with error %d: %s"),
-        lpszFunction, dw, (LPCTSTR)lpMsgBuf);
-    MessageBox(NULL, (LPCTSTR)lpDisplayBuf, g_pszAppName, MB_OK);
+        lpsz_function, dw, (LPCTSTR)lp_msg_buf);
+    MessageBox(NULL, (LPCTSTR)lp_display_buf, g_psz_app_name, MB_OK);
 
-    LocalFree(lpMsgBuf);
-    LocalFree(lpDisplayBuf);
+    LocalFree(lp_msg_buf);
+    LocalFree(lp_display_buf);
 }
 
-BOOL DoRegisterDeviceInterfaceToHwnd(
-    IN GUID InterfaceClassGuid,
-    IN HWND hWnd,
-    OUT HDEVNOTIFY* hDeviceNotify
+BOOL Register_Device_Interface_To_Hwnd(
+    IN GUID Interface_class_guid,
+    IN HWND hwnd,
+    OUT HDEVNOTIFY* h_device_notify
 )
 // Routine Description:
 //     Registers an HWND for notification of changes in the device interfaces
@@ -168,30 +168,30 @@ BOOL DoRegisterDeviceInterfaceToHwnd(
 //     so a similar wrapper function to this one supporting that scenario
 //     could be made from this template.
 {
-    DEV_BROADCAST_DEVICEINTERFACE NotificationFilter;
+    DEV_BROADCAST_DEVICEINTERFACE notification_filter;
 
-    ZeroMemory(&NotificationFilter, sizeof(NotificationFilter));
-    NotificationFilter.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
-    NotificationFilter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-    NotificationFilter.dbcc_classguid = InterfaceClassGuid;
+    ZeroMemory(&notification_filter, sizeof(notification_filter));
+    notification_filter.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
+    notification_filter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+    notification_filter.dbcc_classguid = Interface_class_guid;
 
-    *hDeviceNotify = RegisterDeviceNotification(
-        hWnd,                       // events recipient
-        &NotificationFilter,        // type of device
+    *h_device_notify = RegisterDeviceNotification(
+        hwnd,                       // events recipient
+        &notification_filter,        // type of device
         DEVICE_NOTIFY_WINDOW_HANDLE // type of recipient handle
     );
 
-    if (NULL == *hDeviceNotify)
+    if (NULL == *h_device_notify)
     {
-        ErrorHandler(L"RegisterDeviceNotification");
+        Error_Handler(L"RegisterDeviceNotification");
         return FALSE;
     }
 
     return TRUE;
 }
 
-void MessagePump(
-    HWND hWnd
+void Pump_Message(
+    HWND hwnd
 )
 // Routine Description:
 //     Simple main thread message pump.
@@ -204,17 +204,17 @@ void MessagePump(
 //     None.
 {
     MSG msg;
-    int retVal;
+    int ret_val;
 
     // Get all messages for any window that belongs to this thread,
     // without any filtering. Potential optimization could be
     // obtained via use of filter values if desired.
 
-    while ((retVal = GetMessage(&msg, NULL, 0, 0)) != 0)
+    while ((ret_val = GetMessage(&msg, NULL, 0, 0)) != 0)
     {
-        if (retVal == -1)
+        if (ret_val == -1)
         {
-            ErrorHandler(L"GetMessage");
+            Error_Handler(L"GetMessage");
             break;
         }
         else
@@ -225,11 +225,33 @@ void MessagePump(
     }
 }
 
-INT_PTR WINAPI WinProcCallback(
-    HWND hWnd,
+void Print_HID(HWND hwnd, WPARAM w_param, bool init_print)
+{
+    if (extractor.Extract_HID_Info() == 0)
+    {
+        std::string info_string = extractor.Get_HID_Info_String();
+        std::wstring info_wstring(info_string.begin(), info_string.end());
+
+        if (init_print)
+        {
+            SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)(info_wstring.c_str()));
+        }
+        else
+        {
+            Output_Message(hwnd, w_param, (LPARAM)(info_wstring.c_str()));
+        }
+    }
+    else
+    {
+        SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)TEXT("Extract HID info error...\r\n\r\n"));
+    }
+}
+
+INT_PTR WINAPI Win_Proc_Callback(
+    HWND hwnd,
     UINT message,
-    WPARAM wParam,
-    LPARAM lParam
+    WPARAM w_param,
+    LPARAM l_param
 )
 // Routine Description:
 //     Simple Windows callback for handling messages.
@@ -248,10 +270,10 @@ INT_PTR WINAPI WinProcCallback(
 //     For more information regarding these parameters and return value,
 //     see the documentation for WNDCLASSEX and CreateWindowEx.
 {
-    LRESULT lRet = 1;
-    static HDEVNOTIFY hDeviceNotify;
-    static HWND hEditWnd;
-    static ULONGLONG msgCount = 0;
+    LRESULT l_ret = 1;
+    static HDEVNOTIFY h_device_notify;
+    static HWND h_edit_wnd;
+    static ULONGLONG msg_count = 0;
 
     switch (message)
     {
@@ -264,61 +286,51 @@ INT_PTR WINAPI WinProcCallback(
         // If you were using a service, you would put this in your main code 
         // path as part of your service initialization.
         //
-        if (!DoRegisterDeviceInterfaceToHwnd(
-            WceusbshGUID,
-            hWnd,
-            &hDeviceNotify))
+        if (!Register_Device_Interface_To_Hwnd(
+            wceusbsh_guid,
+            hwnd,
+            &h_device_notify))
         {
             // Terminate on failure.
-            ErrorHandler(L"DoRegisterDeviceInterfaceToHwnd");
+            Error_Handler(L"DoRegisterDeviceInterfaceToHwnd");
             ExitProcess(1);
         }
-
 
         //
         // Make the child window for output.
         //
-        hEditWnd = CreateWindow(TEXT("EDIT"),// predefined class 
+        h_edit_wnd = CreateWindow(TEXT("EDIT"),// predefined class 
             NULL,        // no window title 
             WS_CHILD | WS_VISIBLE | WS_VSCROLL |
             ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL,
             0, 0, 0, 0,  // set size in WM_SIZE message 
-            hWnd,        // parent window 
+            hwnd,        // parent window 
             (HMENU)1,    // edit control ID 
-            (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE),
+            (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE),
             NULL);       // pointer not needed 
 
-        if (hEditWnd == NULL)
+        if (h_edit_wnd == NULL)
         {
             // Terminate on failure.
-            ErrorHandler(L"CreateWindow: Edit Control");
+            Error_Handler(L"CreateWindow: Edit Control");
             ExitProcess(1);
         }
-
-        if (extractor.Extract_HID_Info() == 0)
-        {
-            std::string info_string = extractor.Get_HID_Info_String();
-            std::wstring info_wstring(info_string.begin(), info_string.end());
-            SendMessage(hEditWnd, WM_SETTEXT, 0, (LPARAM)(info_wstring.c_str()));
-        }
-        else
-        {
-            SendMessage(hEditWnd, WM_SETTEXT, 0, (LPARAM)TEXT("Initial extract HID info error...\r\n\r\n"));
-        }
+        
+        Print_HID(h_edit_wnd, w_param, true);
 
         break;
 
     case WM_SETFOCUS:
-        SetFocus(hEditWnd);
+        SetFocus(h_edit_wnd);
 
         break;
 
     case WM_SIZE:
         // Make the edit control the size of the window's client area. 
-        MoveWindow(hEditWnd,
+        MoveWindow(h_edit_wnd,
             0, 0,                  // starting x- and y-coordinates 
-            LOWORD(lParam),        // width of client area 
-            HIWORD(lParam),        // height of client area 
+            LOWORD(l_param),        // width of client area 
+            HIWORD(l_param),        // height of client area 
             TRUE);                 // repaint window 
 
         break;
@@ -334,72 +346,75 @@ INT_PTR WINAPI WinProcCallback(
         // way. Refer to the extended information for your particular device type 
         // specified by your GUID.
         //
-        PDEV_BROADCAST_DEVICEINTERFACE b = (PDEV_BROADCAST_DEVICEINTERFACE)lParam;
-        TCHAR strBuff[256];
+        PDEV_BROADCAST_DEVICEINTERFACE b = (PDEV_BROADCAST_DEVICEINTERFACE)l_param;
+        TCHAR str_buff[256];
 
         // Output some messages to the window.
-        switch (wParam)
+        switch (w_param)
         {
         case DBT_DEVICEARRIVAL:
-            msgCount++;
+            msg_count++;
             StringCchPrintf(
-                strBuff, 256,
-                TEXT("Message %d: DBT_DEVICEARRIVAL\n"), (int)msgCount);
+                str_buff, 256,
+                TEXT("Message %d: DBT_DEVICEARRIVAL\n"), (int)msg_count);
+
             break;
         case DBT_DEVICEREMOVECOMPLETE:
-            msgCount++;
+            msg_count++;
             StringCchPrintf(
-                strBuff, 256,
-                TEXT("Message %d: DBT_DEVICEREMOVECOMPLETE\n"), (int)msgCount);
+                str_buff, 256,
+                TEXT("Message %d: DBT_DEVICEREMOVECOMPLETE\n"), (int)msg_count);
+
             break;
         case DBT_DEVNODES_CHANGED:
-            msgCount++;
+            msg_count++;
             StringCchPrintf(
-                strBuff, 256,
-                TEXT("Message %d: DBT_DEVNODES_CHANGED\n"), (int)msgCount);
+                str_buff, 256,
+                TEXT("Message %d: DBT_DEVNODES_CHANGED\n"), (int)msg_count);
+
             break;
         default:
-            msgCount++;
+            msg_count++;
             StringCchPrintf(
-                strBuff, 256,
+                str_buff, 256,
                 TEXT("Message %d: WM_DEVICECHANGE message received, value %d unhandled.\n"),
-                (int)msgCount, wParam);
+                (int)msg_count, w_param);
+
             break;
         }
-        OutputMessage(hEditWnd, wParam, (LPARAM)strBuff);
 
-        if (extractor.Extract_HID_Info() == 0)
-        {
-            std::string info_string = extractor.Get_HID_Info_String();
-            std::wstring info_wstring(info_string.begin(), info_string.end());
-            OutputMessage(hEditWnd, wParam, (LPARAM)(info_wstring.c_str()));
-        }
-    }
-    break;
+        Output_Message(h_edit_wnd, w_param, (LPARAM)str_buff);
+        Print_HID(h_edit_wnd, w_param, false);
+
+        break;
+    }  
     case WM_CLOSE:
-        if (!UnregisterDeviceNotification(hDeviceNotify))
+        if (!UnregisterDeviceNotification(h_device_notify))
         {
-            ErrorHandler(L"UnregisterDeviceNotification");
+            Error_Handler(L"UnregisterDeviceNotification");
         }
-        DestroyWindow(hWnd);
+        DestroyWindow(hwnd);
+
         break;
 
     case WM_DESTROY:
         PostQuitMessage(0);
+
         break;
 
     default:
         // Send all other messages on to the default windows handler.
-        lRet = DefWindowProc(hWnd, message, wParam, lParam);
+        l_ret = DefWindowProc(hwnd, message, w_param, l_param);
+
         break;
     }
 
-    return lRet;
+    return l_ret;
 }
 
 #define WND_CLASS_NAME TEXT("SampleAppWindowClass")
 
-BOOL InitWindowClass()
+BOOL Init_Window_Class()
 // Routine Description:
 //      Simple wrapper to initialize and register a window class.
 
@@ -414,46 +429,46 @@ BOOL InitWindowClass()
 //     important unique values used with CreateWindowEx and the
 //     Windows message pump.
 {
-    WNDCLASSEX wndClass;
+    WNDCLASSEX wnd_class;
 
-    wndClass.cbSize = sizeof(WNDCLASSEX);
-    wndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-    wndClass.hInstance = reinterpret_cast<HINSTANCE>(GetModuleHandle(0));
-    wndClass.lpfnWndProc = reinterpret_cast<WNDPROC>(WinProcCallback);
-    wndClass.cbClsExtra = 0;
-    wndClass.cbWndExtra = 0;
-    wndClass.hIcon = LoadIcon(0, IDI_APPLICATION);
-    wndClass.hbrBackground = CreateSolidBrush(RGB(192, 192, 192));
-    wndClass.hCursor = LoadCursor(0, IDC_ARROW);
-    wndClass.lpszClassName = WND_CLASS_NAME;
-    wndClass.lpszMenuName = NULL;
-    wndClass.hIconSm = wndClass.hIcon;
+    wnd_class.cbSize = sizeof(WNDCLASSEX);
+    wnd_class.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+    wnd_class.hInstance = reinterpret_cast<HINSTANCE>(GetModuleHandle(0));
+    wnd_class.lpfnWndProc = reinterpret_cast<WNDPROC>(Win_Proc_Callback);
+    wnd_class.cbClsExtra = 0;
+    wnd_class.cbWndExtra = 0;
+    wnd_class.hIcon = LoadIcon(0, IDI_APPLICATION);
+    wnd_class.hbrBackground = CreateSolidBrush(RGB(192, 192, 192));
+    wnd_class.hCursor = LoadCursor(0, IDC_ARROW);
+    wnd_class.lpszClassName = WND_CLASS_NAME;
+    wnd_class.lpszMenuName = NULL;
+    wnd_class.hIconSm = wnd_class.hIcon;
 
 
-    if (!RegisterClassEx(&wndClass))
+    if (!RegisterClassEx(&wnd_class))
     {
-        ErrorHandler(L"RegisterClassEx");
+        Error_Handler(L"RegisterClassEx");
         return FALSE;
     }
     return TRUE;
 }
 
 int __stdcall _tWinMain(
-    _In_ HINSTANCE hInstanceExe,
+    _In_ HINSTANCE h_instance_exe,
     _In_opt_ HINSTANCE, // should not reference this parameter
-    _In_ PTSTR lpstrCmdLine,
-    _In_ int nCmdShow)
+    _In_ PTSTR lpstr_cmd_line,
+    _In_ int n_cmd_show)
 {
     //
     // To enable a console project to compile this code, set
     // Project->Properties->Linker->System->Subsystem: Windows.
     //
 
-    int nArgC = 0;
-    PWSTR* ppArgV = CommandLineToArgvW(lpstrCmdLine, &nArgC);
-    g_pszAppName = ppArgV[0];
+    int n_arg_c = 0;
+    PWSTR* pp_arg_v = CommandLineToArgvW(lpstr_cmd_line, &n_arg_c);
+    g_psz_app_name = pp_arg_v[0];
 
-    if (!InitWindowClass())
+    if (!Init_Window_Class())
     {
         // InitWindowClass displays any errors
         return -1;
@@ -461,29 +476,29 @@ int __stdcall _tWinMain(
 
     // Main app window
 
-    HWND hWnd = CreateWindowEx(
+    HWND hwnd = CreateWindowEx(
         WS_EX_CLIENTEDGE | WS_EX_APPWINDOW,
         WND_CLASS_NAME,
-        g_pszAppName,
+        g_psz_app_name,
         WS_OVERLAPPEDWINDOW, // style
         CW_USEDEFAULT, 0,
         1280, 720,
         NULL, NULL,
-        hInstanceExe,
+        h_instance_exe,
         NULL);
 
-    if (hWnd == NULL)
+    if (hwnd == NULL)
     {
-        ErrorHandler(L"CreateWindowEx: main appwindow hWnd");
+        Error_Handler(L"CreateWindowEx: main appwindow hWnd");
         return -1;
     }
 
     // Actually draw the window.
-    ShowWindow(hWnd, SW_SHOWNORMAL);
-    UpdateWindow(hWnd);
+    ShowWindow(hwnd, SW_SHOWNORMAL);
+    UpdateWindow(hwnd);
 
     // The message pump loops until the window is destroyed.
-    MessagePump(hWnd);
+    Pump_Message(hwnd);
 
     return 1;
 }
