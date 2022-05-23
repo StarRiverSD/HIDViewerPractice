@@ -243,7 +243,7 @@ void Print_HID(HWND hwnd, WPARAM w_param, bool init_print)
     }
     else
     {
-        SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)TEXT("Extract HID info error...\r\n\r\n"));
+        SendMessage(hwnd, EM_LINESCROLL, 0, (LPARAM)TEXT("Extract HID info error...\r\n\r\n"));
     }
 }
 
@@ -356,28 +356,28 @@ INT_PTR WINAPI Win_Proc_Callback(
             msg_count++;
             StringCchPrintf(
                 str_buff, 256,
-                TEXT("Message %d: DBT_DEVICEARRIVAL\n"), (int)msg_count);
+                TEXT("Message %d: DBT_DEVICEARRIVAL\r\n"), (int)msg_count);
 
             break;
         case DBT_DEVICEREMOVECOMPLETE:
             msg_count++;
             StringCchPrintf(
                 str_buff, 256,
-                TEXT("Message %d: DBT_DEVICEREMOVECOMPLETE\n"), (int)msg_count);
+                TEXT("Message %d: DBT_DEVICEREMOVECOMPLETE\r\n"), (int)msg_count);
 
             break;
         case DBT_DEVNODES_CHANGED:
             msg_count++;
             StringCchPrintf(
                 str_buff, 256,
-                TEXT("Message %d: DBT_DEVNODES_CHANGED\n"), (int)msg_count);
+                TEXT("Message %d: DBT_DEVNODES_CHANGED\r\n"), (int)msg_count);
 
             break;
         default:
             msg_count++;
             StringCchPrintf(
                 str_buff, 256,
-                TEXT("Message %d: WM_DEVICECHANGE message received, value %d unhandled.\n"),
+                TEXT("Message %d: WM_DEVICECHANGE message received, value %d unhandled.\r\n"),
                 (int)msg_count, w_param);
 
             break;
